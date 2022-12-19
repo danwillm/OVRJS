@@ -37,6 +37,12 @@ const init = async () => {
 
         overlay.SetOverlayTextureFromBuffer(handle, image, imgSize, imgSize);
 
+        overlay.SetOverlayTransformTrackedDeviceRelative(handle, 1, [
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, -1]
+        ]);
+
         overlay.ShowOverlay(handle);
 
     } catch (e) {

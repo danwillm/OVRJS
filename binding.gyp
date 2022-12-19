@@ -13,7 +13,7 @@
         'VERSION=1.23.7'
       ],
       'sources': [
-        'src/napi_util.h',
+        'src/util.h',
         'src/bindings.cpp',
         'src/ivroverlay.cpp'
         ],

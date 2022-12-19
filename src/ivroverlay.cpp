@@ -3,7 +3,7 @@
 
 #include <openvr.h>
 
-#include "napi_util.h"
+#include "util.h"
 
 std::map<uint32_t, vr::VROverlayHandle_t> IVROverlay::overlayHandleMap;
 
@@ -108,8 +108,6 @@ Napi::Value IVROverlay::SetOverlayTextureFromBuffer(const Napi::CallbackInfo& in
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    GLfloat fLargest;
-
     glBindTexture(GL_TEXTURE_2D, 0);
   } else {
     glBindTexture(GL_TEXTURE_2D, bufferTexture);
@@ -120,9 +118,9 @@ Napi::Value IVROverlay::SetOverlayTextureFromBuffer(const Napi::CallbackInfo& in
   glFlush();
   glFinish();
 
-  vr::Texture_t texture = {(void*)(uintptr_t)bufferTexture, vr::ETextureType::TextureType_OpenGL, vr::EColorSpace::ColorSpace_Auto};
+  const vr::Texture_t texture = {(void*)(uintptr_t)bufferTexture, vr::ETextureType::TextureType_OpenGL, vr::EColorSpace::ColorSpace_Auto};
 
-  vr::VROverlayError err = vr::VROverlay()->SetOverlayTexture(overlayHandleMap[info[0].As<Napi::Number>()], &texture);
+  const vr::VROverlayError err = vr::VROverlay()->SetOverlayTexture(overlayHandleMap[info[0].As<Napi::Number>()], &texture);
   CHECK_OVERLAY_ERROR(env, err);
 
   return Napi::Boolean::New(env, true);
@@ -133,7 +131,7 @@ Napi::Value IVROverlay::SetOverlayWidthInMetres(const Napi::CallbackInfo& info) 
 
   Napi::Env env = info.Env();
 
-  vr::EVROverlayError err = vr::VROverlay()->SetOverlayWidthInMeters(overlayHandleMap[info[0].As<Napi::Number>()], info[1].As<Napi::Number>());
+  const vr::EVROverlayError err = vr::VROverlay()->SetOverlayWidthInMeters(overlayHandleMap[info[0].As<Napi::Number>()], info[1].As<Napi::Number>());
   CHECK_OVERLAY_ERROR(env, err);
 
   return Napi::Boolean::New(env, true);
@@ -144,9 +142,38 @@ Napi::Value IVROverlay::SetOverlayColor(const Napi::CallbackInfo& info) {
 
   Napi::Env env = info.Env();
 
-  vr::EVROverlayError err = vr::VROverlay()->SetOverlayColor(
+  const vr::EVROverlayError err = vr::VROverlay()->SetOverlayColor(
       overlayHandleMap[info[0].As<Napi::Number>()], info[1].As<Napi::Number>(), info[2].As<Napi::Number>(), info[3].As<Napi::Number>());
 
+  CHECK_OVERLAY_ERROR(env, err);
+
+  return Napi::Boolean::New(env, true);
+}
+
+Napi::Value IVROverlay::SetOverlayTransformTrackedDeviceRelative(const Napi::CallbackInfo& info) {
+  CHECK_NUM_ARGUMENTS(info, 3);
+
+  Napi::Env env = info.Env();
+
+  const vr::TrackedDeviceIndex_t device_index = info[1].As<Napi::Number>();
+  const vr::HmdMatrix34_t transform = ArgumentToHmdMatrix34(info[2]);
+
+  const vr::EVROverlayError err =
+      vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(overlayHandleMap[info[0].As<Napi::Number>()], device_index, &transform);
+
+  CHECK_OVERLAY_ERROR(env, err);
+
+  return Napi::Boolean::New(env, true);
+}
+Napi::Value IVROverlay::SetOverlayTransformAbsolute(const Napi::CallbackInfo& info) {
+  CHECK_NUM_ARGUMENTS(info, 3);
+
+  Napi::Env env = info.Env();
+
+  const vr::ETrackingUniverseOrigin origin = static_cast<vr::TrackingUniverseOrigin>(info[1].As<Napi::Number>().Int32Value());
+  const vr::HmdMatrix34_t transform = ArgumentToHmdMatrix34(info[2]);
+
+  const vr::EVROverlayError err = vr::VROverlay()->SetOverlayTransformAbsolute(overlayHandleMap[info[0].As<Napi::Number>()], origin, &transform);
   CHECK_OVERLAY_ERROR(env, err);
 
   return Napi::Boolean::New(env, true);
@@ -156,9 +183,13 @@ Napi::Function IVROverlay::GetClass(Napi::Env env) {
   return DefineClass(
       env,
       "IVROverlay",
-      {IVROverlay::InstanceMethod("CreateOverlay", &IVROverlay::CreateOverlay),
-       IVROverlay::InstanceMethod("ShowOverlay", &IVROverlay::ShowOverlay),
-       IVROverlay::InstanceMethod("SetOverlayTextureFromBuffer", &IVROverlay::SetOverlayTextureFromBuffer),
-       IVROverlay::InstanceMethod("SetOverlayWidthInMetres", &IVROverlay::SetOverlayWidthInMetres),
-       IVROverlay::InstanceMethod("SetOverlayColor", &IVROverlay::SetOverlayColor)});
+      {
+          IVROverlay::InstanceMethod("CreateOverlay", &IVROverlay::CreateOverlay),
+          IVROverlay::InstanceMethod("ShowOverlay", &IVROverlay::ShowOverlay),
+          IVROverlay::InstanceMethod("SetOverlayTextureFromBuffer", &IVROverlay::SetOverlayTextureFromBuffer),
+          IVROverlay::InstanceMethod("SetOverlayWidthInMetres", &IVROverlay::SetOverlayWidthInMetres),
+          IVROverlay::InstanceMethod("SetOverlayColor", &IVROverlay::SetOverlayColor),
+          IVROverlay::InstanceMethod("SetOverlayTransformTrackedDeviceRelative", &IVROverlay::SetOverlayTransformTrackedDeviceRelative),
+          IVROverlay::InstanceMethod("SetOverlayTransformAbsolute", &IVROverlay::SetOverlayTransformAbsolute),
+      });
 }
