@@ -13,6 +13,7 @@
         'VERSION=1.23.7'
       ],
       'sources': [
+        'src/napi_util.h',
         'src/bindings.cpp',
         'src/ivroverlay.cpp'
         ],
@@ -23,6 +24,8 @@
         '<(module_root_dir)/lib/sdl2-2.0.3/include'
       ],
       'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
       'conditions': [
         ['OS=="linux"', {
           'library_dirs': ['<(module_root_dir)/lib/openvr/lib/linux64'],
@@ -49,13 +52,10 @@
         ['OS=="win"', {
           'library_dirs': ['<(module_root_dir)/lib/openvr/lib/win64', '<(module_root_dir)/lib/glfw/lib-vc2022'],
           'libraries': ['openvr_api.lib', 'glfw3dll.lib', 'opengl32.lib'],
-          'defines' : ['VC_EXTRALEAN', 'NOMINMAX'],
-          'msvs_settings' : {
-            'VCCLCompilerTool' : {
-              'AdditionalOptions' : ['/std:c++17','/O2','/Oy','/GL','/GF','/Gm-','/EHsc','/MT','/GS','/Gy','/GR-','/Gd']
-            },
-            'VCLinkerTool' : {
-              'AdditionalOptions' : ['/OPT:REF','/OPT:ICF','/LTCG']
+          'defines' : ['VC_EXTRALEAN', 'NOMINMAX', '_HAS_EXCEPTIONS=1'],
+          "msvs_settings": {
+            "VCCLCompilerTool": {
+              "ExceptionHandling": 1
             },
           },
           'copies':

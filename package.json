@@ -8,9 +8,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:gyp": "node-gyp rebuild",
-    "clean:gyp": "node-gyp clean",
-    "build:headers": "node ./build-headers.js"
+    "build": "node-gyp rebuild",
+    "clean": "node-gyp clean",
+    "build:headers": "node ./build-headers.js",
+    "build:dev": "node-gyp -j 16 build --debug"
   },
   "repository": {
     "type": "git",

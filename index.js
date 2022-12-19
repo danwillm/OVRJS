@@ -1,5 +1,5 @@
 const ovr = require('bindings')('openvr');
-const headers = require('./src/headers');
+const headers = require('./headers');
 
 module.exports = {
     ...ovr,
