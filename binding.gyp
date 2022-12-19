@@ -13,9 +13,12 @@
         'VERSION=1.23.7'
       ],
       'sources': [
-        'src/util.h',
         'src/bindings.cpp',
-        'src/ivroverlay.cpp'
+        'src/ivrsystem.cpp',
+        'src/ivroverlay.cpp',
+        'src/ivrnotifications.cpp',
+        'src/util.h',
+        'src/util.cpp'
         ],
       'include_dirs': [
         "<!(node -p \"require('node-addon-api').include_dir\")",

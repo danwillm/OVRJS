@@ -1,7 +1,9 @@
 #include <napi.h>
 #include <openvr.h>
 
+#include "ivrnotifications.h"
 #include "ivroverlay.h"
+#include "ivrsystem.h"
 
 Napi::Value VR_Init(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
@@ -35,6 +37,8 @@ Napi::Value VR_Init(const Napi::CallbackInfo& info) {
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set(Napi::String::New(env, "VR_Init"), Napi::Function::New(env, VR_Init));
   exports.Set(Napi::String::New(env, "IVROverlay"), IVROverlay::GetClass(env));
+  exports.Set(Napi::String::New(env, "IVRSystem"), IVRSystem::GetClass(env));
+  exports.Set(Napi::String::New(env, "IVRNotifications"), IVRNotifications::GetClass(env));
 
   return exports;
 }
