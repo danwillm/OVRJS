@@ -1,0 +1,33 @@
+{
+  "name": "nodeopenvr",
+  "version": "0.0.1",
+  "description": "OpenVR bindings for NodeJS",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:gyp": "node-gyp rebuild",
+    "clean:gyp": "node-gyp clean",
+    "build:headers": "node ./build-headers.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danwillm/NodeOpenVR.git"
+  },
+  "keywords": [
+    "openvr"
+  ],
+  "author": "danwillm",
+  "license": "MIT",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/danwillm/NodeOpenVR/issues"
+  },
+  "homepage": "https://github.com/danwillm/NodeOpenVR#readme",
+  "dependencies": {
+    "bindings": "^1.5.0",
+    "node-addon-api": "*"
+  }
+}
