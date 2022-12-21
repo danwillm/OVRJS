@@ -165,6 +165,7 @@ Napi::Value IVROverlay::SetOverlayTransformTrackedDeviceRelative(const Napi::Cal
 
   return Napi::Boolean::New(env, true);
 }
+
 Napi::Value IVROverlay::SetOverlayTransformAbsolute(const Napi::CallbackInfo& info) {
   CHECK_NUM_ARGUMENTS(info, 3);
 
@@ -179,6 +180,65 @@ Napi::Value IVROverlay::SetOverlayTransformAbsolute(const Napi::CallbackInfo& in
   return Napi::Boolean::New(env, true);
 }
 
+Napi::Value IVROverlay::SetOverlayInputMethod(const Napi::CallbackInfo& info) {
+  CHECK_NUM_ARGUMENTS(info, 2);
+
+  Napi::Env env = info.Env();
+
+  const vr::VROverlayInputMethod method = static_cast<vr::VROverlayInputMethod>(info[1].As<Napi::Number>().Int32Value());
+
+  const vr::EVROverlayError err = vr::VROverlay()->SetOverlayInputMethod(overlayHandleMap[info[0].As<Napi::Number>()], method);
+  CHECK_OVERLAY_ERROR(env, err);
+
+  return Napi::Boolean::New(env, true);
+}
+
+Napi::Value IVROverlay::SetOverlayFlag(const Napi::CallbackInfo& info) {
+  CHECK_NUM_ARGUMENTS(info, 3);
+
+  Napi::Env env = info.Env();
+
+  const vr::VROverlayFlags flags = static_cast<vr::VROverlayFlags>(info[1].As<Napi::Number>().Int32Value());
+  const bool enabled = info[2].As<Napi::Boolean>();
+
+  const vr::EVROverlayError err = vr::VROverlay()->SetOverlayFlag(overlayHandleMap[info[0].As<Napi::Number>()], flags, enabled);
+  CHECK_OVERLAY_ERROR(env, err);
+
+  return Napi::Boolean::New(env, true);
+}
+
+Napi::Value IVROverlay::PollNextOverlayEvent(const Napi::CallbackInfo& info) {
+  CHECK_NUM_ARGUMENTS(info, 1);
+
+  Napi::Env env = info.Env();
+
+  vr::VREvent_t event;
+  bool has_event = vr::VROverlay()->PollNextOverlayEvent(overlayHandleMap[info[0].As<Napi::Number>()], &event, sizeof(event));
+
+  if (!has_event) {
+    return Napi::Boolean::New(env, false);
+  }
+
+  Napi::Object result = Napi::Object::New(env);
+
+  switch (event.eventType) {
+    case vr::EVREventType::VREvent_MouseButtonDown:
+    case vr::EVREventType::VREvent_MouseButtonUp:
+    case vr::EVREventType::VREvent_MouseMove:
+      vr::VREvent_Mouse_t mouse = event.data.mouse;
+
+      result.Set("x", mouse.x);
+      result.Set("y", mouse.y);
+      result.Set("button", mouse.button);
+
+      break;
+  }
+
+  result.Set("eventType", event.eventType);
+
+  return result;
+}
+
 Napi::Function IVROverlay::GetClass(Napi::Env env) {
   return DefineClass(
       env,
@@ -191,5 +251,8 @@ Napi::Function IVROverlay::GetClass(Napi::Env env) {
           IVROverlay::InstanceMethod("SetOverlayColor", &IVROverlay::SetOverlayColor),
           IVROverlay::InstanceMethod("SetOverlayTransformTrackedDeviceRelative", &IVROverlay::SetOverlayTransformTrackedDeviceRelative),
           IVROverlay::InstanceMethod("SetOverlayTransformAbsolute", &IVROverlay::SetOverlayTransformAbsolute),
+          IVROverlay::InstanceMethod("SetOverlayInputMethod", &IVROverlay::SetOverlayInputMethod),
+          IVROverlay::InstanceMethod("SetOverlayFlag", &IVROverlay::SetOverlayFlag),
+          IVROverlay::InstanceMethod("PollNextOverlayEvent", &IVROverlay::PollNextOverlayEvent),
       });
 }

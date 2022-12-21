@@ -16,6 +16,9 @@ class IVROverlay : public Napi::ObjectWrap<IVROverlay> {
   Napi::Value SetOverlayColor(const Napi::CallbackInfo&);
   Napi::Value SetOverlayTransformTrackedDeviceRelative(const Napi::CallbackInfo&);
   Napi::Value SetOverlayTransformAbsolute(const Napi::CallbackInfo&);
+  Napi::Value SetOverlayInputMethod(const Napi::CallbackInfo&);
+  Napi::Value SetOverlayFlag(const Napi::CallbackInfo&);
+  Napi::Value PollNextOverlayEvent(const Napi::CallbackInfo&);
 
   static Napi::Function GetClass(Napi::Env);
 
