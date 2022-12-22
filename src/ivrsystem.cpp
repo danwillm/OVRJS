@@ -4,10 +4,9 @@
 
 IVRSystem::IVRSystem(const Napi::CallbackInfo& info) : ObjectWrap(info){};
 
-#define CHECK_PROPERTY_ERROR(env, err)                                                                 \
-  if (err) {                                                                                           \
-    Napi::Error::New(env, vr::VRSystem()->GetPropErrorNameFromEnum(err)).ThrowAsJavaScriptException(); \
-    return env.Null();                                                                                 \
+#define CHECK_PROPERTY_ERROR(env, err)  \
+  if (err) {                            \
+    return Napi::Number::New(env, err); \
   }
 
 Napi::Value IVRSystem::GetControllerRoleForTrackedDeviceIndex(const Napi::CallbackInfo& info) {

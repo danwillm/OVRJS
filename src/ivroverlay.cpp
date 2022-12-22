@@ -10,11 +10,7 @@ std::map<uint32_t, vr::VROverlayHandle_t> IVROverlay::overlayHandleMap;
 GLFWwindow* IVROverlay::glWindow = NULL;
 GLuint IVROverlay::bufferTexture;
 
-#define CHECK_OVERLAY_ERROR(env, err)                                         \
-  if (err) {                                                                  \
-    Napi::Error::New(env, vr::VROverlay()->GetOverlayErrorNameFromEnum(err)); \
-    return env.Null();                                                        \
-  }
+#define RETURN_OVERLAY_RESULT(env, err) return Napi::Number::New(env, err);
 
 IVROverlay::IVROverlay(const Napi::CallbackInfo& info) : ObjectWrap(info){};
 
@@ -52,31 +48,30 @@ Napi::Value IVROverlay::CreateOverlay(const Napi::CallbackInfo& info) {
   Napi::String name = info[0].As<Napi::String>();
 
   vr::VROverlayError err = vr::VROverlay()->CreateOverlay(key.Utf8Value().c_str(), name.Utf8Value().c_str(), &handle);
-  CHECK_OVERLAY_ERROR(env, err);
+  if (err) {
+    RETURN_OVERLAY_RESULT(env, err);
+  }
 
   vr::VRTextureBounds_t bounds = {0.f, 1.f, 1.f, 0.f};
   err = vr::VROverlay()->SetOverlayTextureBounds(handle, &bounds);
-  CHECK_OVERLAY_ERROR(env, err);
+  if (err) {
+    RETURN_OVERLAY_RESULT(env, err);
+  }
 
   uint32_t ihandle = (uint32_t)handle;
   overlayHandleMap.insert(std::pair<uint32_t, vr::VROverlayHandle_t>(ihandle, handle));
 
-  return Napi::Number::New(env, ihandle);
+  RETURN_OVERLAY_RESULT(env, err);
 }
 
 Napi::Value IVROverlay::ShowOverlay(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
-  if (info.Length() < 1) {
-    Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
-
-    return env.Null();
-  }
+  CHECK_NUM_ARGUMENTS(info, 1);
 
   vr::VROverlayError err = vr::VROverlay()->ShowOverlay(overlayHandleMap[info[0].As<Napi::Number>()]);
-  CHECK_OVERLAY_ERROR(env, err);
 
-  return Napi::Boolean::New(env, true);
+  RETURN_OVERLAY_RESULT(env, err);
 }
 
 Napi::Value IVROverlay::SetOverlayTextureFromBuffer(const Napi::CallbackInfo& info) {
@@ -121,9 +116,8 @@ Napi::Value IVROverlay::SetOverlayTextureFromBuffer(const Napi::CallbackInfo& in
   const vr::Texture_t texture = {(void*)(uintptr_t)bufferTexture, vr::ETextureType::TextureType_OpenGL, vr::EColorSpace::ColorSpace_Auto};
 
   const vr::VROverlayError err = vr::VROverlay()->SetOverlayTexture(overlayHandleMap[info[0].As<Napi::Number>()], &texture);
-  CHECK_OVERLAY_ERROR(env, err);
 
-  return Napi::Boolean::New(env, true);
+  RETURN_OVERLAY_RESULT(env, err);
 }
 
 Napi::Value IVROverlay::SetOverlayWidthInMetres(const Napi::CallbackInfo& info) {
@@ -132,9 +126,8 @@ Napi::Value IVROverlay::SetOverlayWidthInMetres(const Napi::CallbackInfo& info) 
   Napi::Env env = info.Env();
 
   const vr::EVROverlayError err = vr::VROverlay()->SetOverlayWidthInMeters(overlayHandleMap[info[0].As<Napi::Number>()], info[1].As<Napi::Number>());
-  CHECK_OVERLAY_ERROR(env, err);
 
-  return Napi::Boolean::New(env, true);
+  RETURN_OVERLAY_RESULT(env, err);
 }
 
 Napi::Value IVROverlay::SetOverlayColor(const Napi::CallbackInfo& info) {
@@ -145,9 +138,7 @@ Napi::Value IVROverlay::SetOverlayColor(const Napi::CallbackInfo& info) {
   const vr::EVROverlayError err = vr::VROverlay()->SetOverlayColor(
       overlayHandleMap[info[0].As<Napi::Number>()], info[1].As<Napi::Number>(), info[2].As<Napi::Number>(), info[3].As<Napi::Number>());
 
-  CHECK_OVERLAY_ERROR(env, err);
-
-  return Napi::Boolean::New(env, true);
+  RETURN_OVERLAY_RESULT(env, err);
 }
 
 Napi::Value IVROverlay::SetOverlayTransformTrackedDeviceRelative(const Napi::CallbackInfo& info) {
@@ -161,9 +152,7 @@ Napi::Value IVROverlay::SetOverlayTransformTrackedDeviceRelative(const Napi::Cal
   const vr::EVROverlayError err =
       vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(overlayHandleMap[info[0].As<Napi::Number>()], device_index, &transform);
 
-  CHECK_OVERLAY_ERROR(env, err);
-
-  return Napi::Boolean::New(env, true);
+  RETURN_OVERLAY_RESULT(env, err);
 }
 
 Napi::Value IVROverlay::SetOverlayTransformAbsolute(const Napi::CallbackInfo& info) {
@@ -175,9 +164,8 @@ Napi::Value IVROverlay::SetOverlayTransformAbsolute(const Napi::CallbackInfo& in
   const vr::HmdMatrix34_t transform = ArgumentToHmdMatrix34(info[2]);
 
   const vr::EVROverlayError err = vr::VROverlay()->SetOverlayTransformAbsolute(overlayHandleMap[info[0].As<Napi::Number>()], origin, &transform);
-  CHECK_OVERLAY_ERROR(env, err);
 
-  return Napi::Boolean::New(env, true);
+  RETURN_OVERLAY_RESULT(env, err);
 }
 
 Napi::Value IVROverlay::SetOverlayInputMethod(const Napi::CallbackInfo& info) {
@@ -188,9 +176,8 @@ Napi::Value IVROverlay::SetOverlayInputMethod(const Napi::CallbackInfo& info) {
   const vr::VROverlayInputMethod method = static_cast<vr::VROverlayInputMethod>(info[1].As<Napi::Number>().Int32Value());
 
   const vr::EVROverlayError err = vr::VROverlay()->SetOverlayInputMethod(overlayHandleMap[info[0].As<Napi::Number>()], method);
-  CHECK_OVERLAY_ERROR(env, err);
 
-  return Napi::Boolean::New(env, true);
+  RETURN_OVERLAY_RESULT(env, err);
 }
 
 Napi::Value IVROverlay::SetOverlayFlag(const Napi::CallbackInfo& info) {
@@ -202,9 +189,8 @@ Napi::Value IVROverlay::SetOverlayFlag(const Napi::CallbackInfo& info) {
   const bool enabled = info[2].As<Napi::Boolean>();
 
   const vr::EVROverlayError err = vr::VROverlay()->SetOverlayFlag(overlayHandleMap[info[0].As<Napi::Number>()], flags, enabled);
-  CHECK_OVERLAY_ERROR(env, err);
 
-  return Napi::Boolean::New(env, true);
+  RETURN_OVERLAY_RESULT(env, err);
 }
 
 Napi::Value IVROverlay::PollNextOverlayEvent(const Napi::CallbackInfo& info) {

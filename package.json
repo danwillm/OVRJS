@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node-gyp rebuild",
     "clean": "node-gyp clean",
-    "build:headers": "node ./build-headers.js",
+    "build:headers": "ts-node ./build-headers.ts",
     "build:dev": "node-gyp -j 16 build --debug"
   },
   "repository": {
@@ -30,5 +30,10 @@
   "dependencies": {
     "bindings": "^1.5.0",
     "node-addon-api": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.17",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.4"
   }
 }
