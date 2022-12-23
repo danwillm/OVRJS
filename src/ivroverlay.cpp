@@ -61,7 +61,7 @@ Napi::Value IVROverlay::CreateOverlay(const Napi::CallbackInfo& info) {
   uint32_t ihandle = (uint32_t)handle;
   overlayHandleMap.insert(std::pair<uint32_t, vr::VROverlayHandle_t>(ihandle, handle));
 
-  RETURN_OVERLAY_RESULT(env, err);
+  return Napi::Number::New(env, ihandle);
 }
 
 Napi::Value IVROverlay::ShowOverlay(const Napi::CallbackInfo& info) {

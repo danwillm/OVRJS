@@ -22,12 +22,12 @@ export class VROverlay {
         this.handle = this.ivroverlay.CreateOverlay(name, key);
     }
 
-    ShowOverlay() : VROverlayError {
+    ShowOverlay(): VROverlayError {
         return this.ivroverlay.ShowOverlay(this.handle);
     }
 
-    SetOverlayWidthInMetres(width: number) : VROverlayError {
-        return this.ivroverlay.SetOverlayWidthInMetres(width);
+    SetOverlayWidthInMetres(width: number): VROverlayError {
+        return this.ivroverlay.SetOverlayWidthInMetres(this.handle, width);
     }
 
     SetOverlayTextureFromBuffer(buffer: Buffer, width: number, height: number) {
@@ -55,7 +55,7 @@ export class VROverlay {
         return this.ivroverlay.SetOverlayFlag(this.handle, flag);
     }
 
-    PollNextOverlayEvent() : VREvent_t | boolean {
+    PollNextOverlayEvent(): VREvent_t | boolean {
         return this.ivroverlay.PollNextOverlayEvent(this.handle);
     }
 }
@@ -67,23 +67,23 @@ export class VRSystem {
         this.ivrsystem = new ovr.IVRSystem();
     }
 
-    GetControllerRoleForTrackedDeviceIndex(device_index: TrackedDeviceIndex_t) : ETrackedControllerRole {
+    GetControllerRoleForTrackedDeviceIndex(device_index: TrackedDeviceIndex_t): ETrackedControllerRole {
         return this.ivrsystem.GetControllerRoleForTrackedDeviceIndex(device_index);
     }
 
-    GetBoolTrackedDeviceProperty(device_index: TrackedDeviceIndex_t, property: TrackedDeviceProperty) : boolean | ETrackedPropertyError {
+    GetBoolTrackedDeviceProperty(device_index: TrackedDeviceIndex_t, property: TrackedDeviceProperty): boolean | ETrackedPropertyError {
         return this.ivrsystem.GetBoolTrackedDeviceProperty(device_index, property);
     }
 
-    GetInt32TrackedDeviceProperty(device_index: TrackedDeviceIndex_t, property: TrackedDeviceProperty) : number | ETrackedPropertyError {
+    GetInt32TrackedDeviceProperty(device_index: TrackedDeviceIndex_t, property: TrackedDeviceProperty): number | ETrackedPropertyError {
         return this.ivrsystem.GetInt32TrackedDeviceProperty(device_index, property);
     }
 
-    GetFloatTrackedDeviceProperty(device_index: TrackedDeviceIndex_t, property: TrackedDeviceProperty) : number | ETrackedPropertyError {
+    GetFloatTrackedDeviceProperty(device_index: TrackedDeviceIndex_t, property: TrackedDeviceProperty): number | ETrackedPropertyError {
         return this.ivrsystem.GetFloatTrackedDeviceProperty(device_index, property);
     }
 
-    GetStringTrackedDeviceProperty(device_index: TrackedDeviceIndex_t, property: TrackedDeviceProperty) : string | ETrackedPropertyError {
+    GetStringTrackedDeviceProperty(device_index: TrackedDeviceIndex_t, property: TrackedDeviceProperty): string | ETrackedPropertyError {
         return this.ivrsystem.GetStringTrackedDeviceProperty(device_index, property);
     }
 }
