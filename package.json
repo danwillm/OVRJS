@@ -1,5 +1,5 @@
 {
-  "name": "nodeopenvr",
+  "name": "ovrjs",
   "version": "0.0.1",
   "description": "OpenVR bindings for NodeJS",
   "main": "dist/index.js",

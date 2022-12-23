@@ -1,4 +1,4 @@
-# NodeOpenVR
+# OpenVR.JS
 
 Node bindings for OpenVR using N-API.
 
