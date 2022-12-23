@@ -2,13 +2,15 @@
   "name": "nodeopenvr",
   "version": "0.0.1",
   "description": "OpenVR bindings for NodeJS",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node-gyp rebuild",
+    "build": "node-gyp rebuild && npm run build:tsc",
+    "build:tsc": "tsc",
     "clean": "node-gyp clean",
     "build:headers": "ts-node ./build-headers.ts",
     "build:dev": "node-gyp -j 16 build --debug"
@@ -34,6 +36,7 @@
   "devDependencies": {
     "@types/node": "^18.11.17",
     "ts-node": "^10.9.1",
+    "tslib": "^2.4.1",
     "typescript": "^4.9.4"
   }
 }
